@@ -1,0 +1,75 @@
+<!-- MOBILE RESPONSIVE DRAWER BACKDROP -->
+<div (click)="closeMobileDrawer()"
+  class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden transition-opacity"
+  [class.hidden]="!isMobileDrawerOpen()"></div>
+
+<!-- SIDEBAR (Desktop Collapsible & Mobile Responsive Drawer) -->
+<aside
+  class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between z-50 flex-shrink-0 transition-all duration-300 fixed md:relative inset-y-0 left-0 md:translate-x-0"
+  [class.-translate-x-full]="!isMobileDrawerOpen()"
+  [style.width.px]="isCollapsed() ? 80 : 256">
+  <div>
+    <!-- Logo & Desktop Collapse Toggle -->
+    <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800/60">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <div
+          class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo-500 flex items-center justify-center text-white font-bold shadow-lg shadow-primary/30 flex-shrink-0">
+          A
+        </div>
+        <span *ngIf="!isCollapsed()"
+          class="font-bold text-lg tracking-tight bg-gradient-to-r from-primary to-indigo-500 bg-clip-text text-transparent truncate">AuraPay</span>
+      </div>
+      <button (click)="toggleCollapse()"
+        class="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <lucide-icon name="chevron-left" class="w-4 h-4" [class.rotate-180]="isCollapsed()"
+          style="transition: transform 0.2s;"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-140px)]">
+      @for (item of navItems; track item.target) {
+        <a [routerLink]="['/', item.target]" routerLinkActive="bg-primary text-white font-medium shadow-md shadow-primary/25"
+          [routerLinkActiveOptions]="{ exact: false }"
+          #rla="routerLinkActive"
+          class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all group cursor-pointer"
+          [ngClass]="rla.isActive ? '' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-medium'">
+          <lucide-icon [name]="item.icon" class="w-5 h-5 flex-shrink-0"></lucide-icon>
+          <span *ngIf="!isCollapsed()" class="truncate">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </div>
+
+  <!-- User Profile Preview & Dropdown -->
+  <div class="p-4 border-t border-slate-100 dark:border-slate-800/60 relative">
+    <div (click)="toggleUserDropdown($event)"
+      class="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces"
+        class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+      <div *ngIf="!isCollapsed()" class="flex-1 min-w-0">
+        <h4 class="text-sm font-semibold truncate">Alex Morgan</h4>
+        <p class="text-xs text-slate-500 truncate">Pro Member</p>
+      </div>
+      <lucide-icon *ngIf="!isCollapsed()" name="chevron-up" class="w-4 h-4 text-slate-400 flex-shrink-0"></lucide-icon>
+    </div>
+
+    <!-- User Dropdown Menu -->
+    <div *ngIf="isUserDropdownOpen()"
+      class="absolute bottom-16 left-4 right-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-2 shadow-2xl z-50 animate-modal">
+      <button (click)="goToProfile()"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-medium">
+        <lucide-icon name="user" class="w-4 h-4 text-primary"></lucide-icon> Profile Page
+      </button>
+      <button (click)="goToSettings()"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-medium">
+        <lucide-icon name="sliders" class="w-4 h-4 text-slate-400"></lucide-icon> Preferences
+      </button>
+      <div class="h-px bg-slate-200 dark:bg-slate-800 my-1"></div>
+      <button (click)="logout()"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-danger/10 text-danger text-sm font-medium">
+        <lucide-icon name="log-out" class="w-4 h-4"></lucide-icon> Logout
+      </button>
+    </div>
+  </div>
+</aside>

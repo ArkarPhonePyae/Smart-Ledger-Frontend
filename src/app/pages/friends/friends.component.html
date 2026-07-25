@@ -1,0 +1,38 @@
+<div appFadeInView class="space-y-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Friends & Connections</h1>
+      <p class="text-sm text-slate-500 mt-1">Direct balances, friend requests, and individual
+        settlements.</p>
+    </div>
+    <button (click)="addFriend()"
+      class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium shadow-lg shadow-primary/25">+
+      Add Friend</button>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="glass-card p-5 rounded-2xl apple-shadow flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces"
+          class="w-12 h-12 rounded-full object-cover">
+        <div>
+          <h4 class="font-semibold">Sarah Jenkins</h4>
+          <p class="text-xs text-emerald-500 font-medium">Owes you $120.00</p>
+        </div>
+      </div>
+      <button (click)="remind('Sarah')"
+        class="px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold rounded-xl transition-colors">Remind</button>
+    </div>
+    <div class="glass-card p-5 rounded-2xl apple-shadow flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"
+          class="w-12 h-12 rounded-full object-cover">
+        <div>
+          <h4 class="font-semibold">David Chen</h4>
+          <p class="text-xs text-danger font-medium">You owe $45.00</p>
+        </div>
+      </div>
+      <button (click)="settle('David')"
+        class="px-3.5 py-1.5 bg-danger/10 hover:bg-danger/20 text-danger text-xs font-semibold rounded-xl transition-colors">Settle</button>
+    </div>
+  </div>
+</div>

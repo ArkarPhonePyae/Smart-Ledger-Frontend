@@ -1,0 +1,83 @@
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { LucideAngularModule } from 'lucide-angular';
+
+import { routes } from './app.routes';
+import {
+  ChevronLeft,
+  LayoutDashboard,
+  Receipt,
+  Users,
+  UserCheck,
+  PieChart,
+  ShieldAlert,
+  Settings,
+  ChevronUp,
+  User,
+  Sliders,
+  LogOut,
+  Menu,
+  Search,
+  HelpCircle,
+  Moon,
+  Sun,
+  Bell,
+  Plus,
+  Wallet,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Briefcase,
+  ShieldCheck,
+  Sparkles,
+  FileText,
+  UserPlus,
+  ChevronRight,
+  X,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-angular';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideAnimations(),
+    importProvidersFrom(
+      LucideAngularModule.pick({
+        ChevronLeft,
+        LayoutDashboard,
+        Receipt,
+        Users,
+        UserCheck,
+        PieChart,
+        ShieldAlert,
+        Settings,
+        ChevronUp,
+        User,
+        Sliders,
+        LogOut,
+        Menu,
+        Search,
+        HelpCircle,
+        Moon,
+        Sun,
+        Bell,
+        Plus,
+        Wallet,
+        TrendingUp,
+        ArrowUpRight,
+        ArrowDownLeft,
+        Briefcase,
+        ShieldCheck,
+        Sparkles,
+        FileText,
+        UserPlus,
+        ChevronRight,
+        X,
+        CheckCircle,
+        AlertCircle,
+      })
+    ),
+  ],
+};

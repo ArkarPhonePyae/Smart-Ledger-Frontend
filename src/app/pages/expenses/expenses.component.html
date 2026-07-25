@@ -1,0 +1,44 @@
+<div appFadeInView class="space-y-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Expense Management</h1>
+      <p class="text-sm text-slate-500 mt-1">Track, filter, split, and export all your financial
+        transactions.</p>
+    </div>
+    <div class="flex gap-3">
+      <button (click)="exportReport()"
+        class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Export
+        CSV/PDF</button>
+      <button (click)="openNewExpenseModal()"
+        class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium shadow-lg shadow-primary/25">+
+        Add Expense</button>
+    </div>
+  </div>
+  <div class="glass-card rounded-2xl p-6 apple-shadow">
+    <div class="flex flex-col sm:flex-row gap-4 mb-6">
+      <input type="text" placeholder="Search expense description..."
+        class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none border border-transparent focus:border-primary">
+      <select class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none">
+        <option>All Categories</option>
+        <option>Food & Drinks</option>
+        <option>Travel</option>
+        <option>Bills & Utilities</option>
+      </select>
+    </div>
+    <!-- Beautiful Empty States / Filtered Results -->
+    <div class="space-y-3">
+      @for (expense of expenses(); track expense.id) {
+        <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-xl" [ngClass]="[expense.iconBg, expense.iconColor]">{{ expense.emoji }}</span>
+            <div>
+              <h4 class="font-semibold text-sm">{{ expense.title }}</h4>
+              <span class="text-xs text-slate-400">{{ expense.subtitle }}</span>
+            </div>
+          </div>
+          <span class="font-bold" [ngClass]="expense.amountClass">{{ expense.amount }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
