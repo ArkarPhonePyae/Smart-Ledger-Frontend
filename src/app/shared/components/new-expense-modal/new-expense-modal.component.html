@@ -1,40 +1,66 @@
 @if (isOpen()) {
-  <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all">
-    <div
-      class="glass-card bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-6 animate-modal">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold">Add New Expense</h3>
-        <button (click)="close()"
-          class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
-          <lucide-icon name="x" class="w-5 h-5"></lucide-icon>
-        </button>
-      </div>
-      <div class="space-y-4 text-sm">
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Description</label>
-          <input type="text" [(ngModel)]="description" placeholder="e.g. Dinner, Taxi, Groceries"
-            class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all">
+        <div class="glass-card bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-6 animate-modal">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold">{{ id ? 'Edit Expense' : 'Add New Expense' }}</h3>
+                <button (click)="close()" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <lucide-icon name="x" class="w-5 h-5"></lucide-icon>
+                </button>
+            </div>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Title</label>
+                    <input type="text" [(ngModel)]="title" placeholder="e.g. Dinner, Taxi, Groceries"
+                           class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Amount ($)</label>
+                    <input type="number" [(ngModel)]="amount" placeholder="0.00"
+                           class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Category</label>
+                    <!-- 👈 Expenses Component ရှိ Dropdown နဲ့ Value များကို အတူတူဖြစ်အောင် ပြင်ဆင်ထားသည် -->
+                    <select [(ngModel)]="category" class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none">
+                        <option value="General">General</option>
+                        <option value="Food & Drinks">Food & Drinks</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Bills & Utilities">Bills & Utilities</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Group (optional)</label>
+                    <select [(ngModel)]="groupId" class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none">
+                        <option [ngValue]="null">Personal (no group)</option>
+                        @for (g of groups; track g.id) {
+                            <option [ngValue]="g.id">{{ g.name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Payment Method</label>
+                    <select [(ngModel)]="paymentMethod" class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none">
+                        <option value="Cash">Cash</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Mobile Wallet">Mobile Wallet</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Notes</label>
+                    <textarea [(ngModel)]="notes" placeholder="Optional notes..." rows="2"
+                              class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button (click)="close()" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-medium">Cancel</button>
+                <button (click)="submit()" class="flex-1 py-2.5 bg-primary text-white rounded-xl font-medium shadow-lg shadow-primary/25">
+                    {{ id ? 'Update Expense' : 'Save Expense' }}
+                </button>
+            </div>
         </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Amount ($)</label>
-          <input type="number" [(ngModel)]="amount" placeholder="0.00"
-            class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Split Option</label>
-          <select class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none">
-            <option>Split equally (4 people)</option>
-            <option>You owed the full amount</option>
-            <option>Exact amounts</option>
-          </select>
-        </div>
-      </div>
-      <div class="flex gap-3 pt-2">
-        <button (click)="close()" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-medium">Cancel</button>
-        <button (click)="submit()"
-          class="flex-1 py-2.5 bg-primary text-white rounded-xl font-medium shadow-lg shadow-primary/25">Save
-          Expense</button>
-      </div>
     </div>
-  </div>
 }

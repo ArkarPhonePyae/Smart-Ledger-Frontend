@@ -2,20 +2,26 @@ import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class UiStateService {
-  // Desktop collapsible sidebar
   readonly isSidebarCollapsed = signal(false);
-
-  // Mobile responsive drawer
   readonly isMobileDrawerOpen = signal(false);
-
-  // User profile dropdown menu
   readonly isUserDropdownOpen = signal(false);
-
-  // Command palette (Ctrl/Cmd + K)
   readonly isCommandPaletteOpen = signal(false);
 
-  // New expense modal
   readonly isNewExpenseModalOpen = signal(false);
+  readonly editingExpense = signal<any | null>(null);
+
+  // 👈 List ကို ချက်ချင်း refresh လုပ်ပေးမည့် callback function
+  private refreshCallback: (() => void) | null = null;
+
+  setRefreshCallback(callback: () => void): void {
+    this.refreshCallback = callback;
+  }
+
+  triggerRefresh(): void {
+    if (this.refreshCallback) {
+      this.refreshCallback();
+    }
+  }
 
   toggleSidebarCollapse(): void {
     this.isSidebarCollapsed.update((v) => !v);
@@ -46,10 +52,17 @@ export class UiStateService {
   }
 
   openNewExpenseModal(): void {
+    this.editingExpense.set(null);
+    this.isNewExpenseModalOpen.set(true);
+  }
+
+  openEditExpenseModal(expense: any): void {
+    this.editingExpense.set(expense);
     this.isNewExpenseModalOpen.set(true);
   }
 
   closeNewExpenseModal(): void {
     this.isNewExpenseModalOpen.set(false);
+    this.editingExpense.set(null);
   }
 }

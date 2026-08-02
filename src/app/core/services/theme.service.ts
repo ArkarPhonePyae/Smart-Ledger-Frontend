@@ -1,12 +1,34 @@
-import { Injectable, signal } from '@angular/core';
+// theme.service.ts
+import { Injectable, signal } from "@angular/core";
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  /** Original markup ships with `<html class="dark">` i.e. dark mode by default. */
   readonly isDark = signal<boolean>(true);
+
+  constructor() {
+    // 👈 App စစချင်း LocalStorage ထဲက Theme ကို ပြန်ဖတ်ရန်
+    const savedTheme = localStorage.getItem('darkMode');
+    if (savedTheme !== null) {
+      const isDarkParsed = JSON.parse(savedTheme);
+      this.isDark.set(isDarkParsed);
+      this.applyTheme(isDarkParsed);
+    } else {
+      this.applyTheme(this.isDark());
+    }
+  }
 
   toggle(): void {
     this.isDark.update((v) => !v);
-    document.documentElement.classList.toggle('dark', this.isDark());
+    this.applyTheme(this.isDark());
+  }
+
+  setDarkMode(isDark: boolean): void {
+    this.isDark.set(isDark);
+    this.applyTheme(isDark);
+  }
+
+  private applyTheme(isDark: boolean): void {
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('darkMode', JSON.stringify(isDark));
   }
 }

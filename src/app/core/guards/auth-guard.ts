@@ -1,0 +1,16 @@
+import {CanActivateFn, Router} from "@angular/router";
+import {inject} from "@angular/core";
+
+export const authGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
+  const token = localStorage.getItem('token');
+
+  console.log('AuthGuard - Current Token:', token); // Token တကယ်ရှိမရှိ စစ်ရန်
+
+  if (token && token !== 'undefined' && token !== 'null') {
+    return true;
+  } else {
+    router.navigate(['/login']);
+    return false;
+  }
+};

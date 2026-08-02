@@ -1,10 +1,32 @@
 export interface Expense {
-  id: number;
-  emoji: string;
-  iconBg: string;
-  iconColor: string;
+  id?: string | number;
   title: string;
-  subtitle: string;
-  amount: string;
-  amountClass: string;
+  amount: number | string;
+  category?: string; // Optional အဖြစ် ပြောင်းခြင်း
+  paymentMethod?: string;
+  notes?: string;
+  createdAt?: string;
+  groupId?: string;
+  groupName?: string;
+
+  // UI helper fields
+  emoji?: string;
+  iconBg?: string;
+  iconColor?: string;
+  subtitle?: string;
+  amountClass?: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
 }

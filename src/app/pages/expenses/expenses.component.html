@@ -1,44 +1,87 @@
 <div appFadeInView class="space-y-8">
-  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div>
-      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Expense Management</h1>
-      <p class="text-sm text-slate-500 mt-1">Track, filter, split, and export all your financial
-        transactions.</p>
-    </div>
-    <div class="flex gap-3">
-      <button (click)="exportReport()"
-        class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Export
-        CSV/PDF</button>
-      <button (click)="openNewExpenseModal()"
-        class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium shadow-lg shadow-primary/25">+
-        Add Expense</button>
-    </div>
-  </div>
-  <div class="glass-card rounded-2xl p-6 apple-shadow">
-    <div class="flex flex-col sm:flex-row gap-4 mb-6">
-      <input type="text" placeholder="Search expense description..."
-        class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none border border-transparent focus:border-primary">
-      <select class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none">
-        <option>All Categories</option>
-        <option>Food & Drinks</option>
-        <option>Travel</option>
-        <option>Bills & Utilities</option>
-      </select>
-    </div>
-    <!-- Beautiful Empty States / Filtered Results -->
-    <div class="space-y-3">
-      @for (expense of expenses(); track expense.id) {
-        <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
-          <div class="flex items-center gap-3">
-            <span class="p-2.5 rounded-xl" [ngClass]="[expense.iconBg, expense.iconColor]">{{ expense.emoji }}</span>
-            <div>
-              <h4 class="font-semibold text-sm">{{ expense.title }}</h4>
-              <span class="text-xs text-slate-400">{{ expense.subtitle }}</span>
-            </div>
-          </div>
-          <span class="font-bold" [ngClass]="expense.amountClass">{{ expense.amount }}</span>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Expense Management</h1>
+            <p class="text-sm text-slate-500 mt-1">Track, filter, split, and export all your financial transactions.</p>
         </div>
-      }
+        <div class="flex gap-3">
+            <button (click)="exportReport()"
+                    class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Export CSV/PDF</button>
+            <button (click)="openNewExpenseModal()"
+                    class="px-4 py-2 bg-primary text-white rounded-xl text-sm font-medium shadow-lg shadow-primary/25">+ Add Expense</button>
+        </div>
     </div>
-  </div>
+
+    <div class="glass-card rounded-2xl p-6 apple-shadow">
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+            <input type="text"
+                   [(ngModel)]="searchQuery"
+                   (ngModelChange)="onSearch()"
+                   placeholder="Search expense description..."
+                   class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none border border-transparent focus:border-primary">
+
+            <!-- 👈 ဤနေရာတွင် ngModel နှင့် ngModelChange ထည့်သွင်းပေးပါ -->
+            <select [(ngModel)]="selectedCategory"
+                    (ngModelChange)="onSearch()"
+                    class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none">
+                <option value="">All Categories</option>
+                <option value="Food & Drinks">Food & Drinks</option>
+                <option value="Travel">Travel</option>
+                <option value="Bills & Utilities">Bills & Utilities</option>
+                <option value="General">General</option>
+            </select>
+        </div>
+
+        <!-- Expenses List with Edit & Delete Actions -->
+        <div class="space-y-3">
+            @for (expense of expenses(); track expense.id) {
+                <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-100/50 dark:hover:bg-slate-800/80 transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="p-2.5 rounded-xl" [ngClass]="[expense.iconBg || 'bg-primary/10', expense.iconColor || 'text-primary']">{{ expense.emoji || '💰' }}</span>
+                        <div>
+                            <h4 class="font-semibold text-sm">{{ expense.title }}</h4>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-xs px-2 py-0.5 bg-slate-200 dark:bg-slate-700 rounded-md font-medium text-slate-600 dark:text-slate-300">{{ expense.category || 'General' }}</span>
+                                <span class="text-xs text-slate-400">{{ expense.paymentMethod || 'Cash' }}</span>
+                            </div>
+                            @if (expense.notes) {
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 italic">Note: {{ expense.notes }}</p>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <span class="font-bold text-base" [ngClass]="expense.amountClass">${{ expense.amount }}</span>
+
+                        <div class="flex items-center gap-1 border-l pl-3 border-slate-200 dark:border-slate-700">
+                            <button (click)="editExpense(expense)" title="Edit"
+                                    class="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-slate-200/60 dark:hover:bg-slate-700 transition-colors">
+                                <svg class="w-4 h-4 fill-none stroke-current" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                </svg>
+                            </button>
+
+                            <button (click)="deleteExpense(expense.id)" title="Delete"
+                                    class="p-2 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-200/60 dark:hover:bg-slate-700 transition-colors">
+                                <svg class="w-4 h-4 fill-none stroke-current" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            } @empty {
+                <div class="text-center py-12 text-slate-400">
+                    <p class="text-sm">No expenses found.</p>
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+@if (ui.isNewExpenseModalOpen()) {
+    <app-new-expense-modal></app-new-expense-modal>
+}

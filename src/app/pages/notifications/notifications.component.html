@@ -1,18 +1,45 @@
 <div appFadeInView class="space-y-8">
-  <div>
-    <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Notification Center</h1>
-    <p class="text-sm text-slate-500 mt-1">All system alerts, payment reminders, and group updates.</p>
-  </div>
-  <div class="glass-card p-6 rounded-2xl apple-shadow space-y-4 max-w-3xl">
-    @for (n of notifications; track n.title) {
-      <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border-l-4"
-        [ngClass]="n.borderClass">
+    <div class="flex justify-between items-center">
         <div>
-          <h4 class="font-semibold text-sm">{{ n.title }}</h4>
-          <p class="text-xs text-slate-400">{{ n.message }}</p>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Notification Center</h1>
+            <p class="text-sm text-slate-500 mt-1">All system alerts, payment reminders, and group updates.</p>
         </div>
-        <span class="text-[10px] text-slate-400">{{ n.time }}</span>
-      </div>
-    }
-  </div>
+        @if (notifications.length > 0) {
+            <button (click)="clearAll()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-semibold rounded-xl transition-colors">
+                Clear All
+            </button>
+        }
+    </div>
+
+    <div class="glass-card p-6 rounded-2xl apple-shadow space-y-4 max-w-3xl">
+        @if (isLoading) {
+            <p class="text-xs text-slate-400">Loading notifications...</p>
+        } @else {
+            @if (notifications.length > 0) {
+                @for (n of notifications; track n.id) {
+                    <div class="flex items-center justify-between p-4 rounded-xl border-l-4 transition-all"
+                         [ngClass]="n.isRead ? 'bg-slate-800/20 border-slate-600 text-slate-400' : 'bg-slate-800/60 border-primary text-white font-semibold'">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                @if (!n.isRead) {
+                                    <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                                }
+                                <h4 class="text-sm" [ngClass]="n.isRead ? 'font-normal' : 'font-bold'">{{ n.title }}</h4>
+                            </div>
+                            <p class="text-xs mt-0.5" [ngClass]="n.isRead ? 'text-slate-400 font-normal' : 'text-slate-200'">{{ n.message }}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] text-slate-400">{{ n.createdAt | date:'shortTime' }}</span>
+                            @if (!n.isRead) {
+                                <button (click)="markAsRead(n.id)" class="text-xs text-primary font-semibold hover:underline">Mark as read</button>
+                            }
+                            <button (click)="deleteNotification(n.id)" class="text-xs text-rose-500 hover:underline">Delete</button>
+                        </div>
+                    </div>
+                }
+            } @else {
+                <p class="text-xs text-slate-400 text-center py-4">No notifications found.</p>
+            }
+        }
+    </div>
 </div>
