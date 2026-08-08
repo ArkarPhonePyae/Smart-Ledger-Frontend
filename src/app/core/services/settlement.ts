@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class SettlementService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/settlements';
+  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/settlements';
 
   settleDebt(payload: { payeeName: string; amount: number }): Observable<any> {
     return this.http.post(this.apiUrl, payload);

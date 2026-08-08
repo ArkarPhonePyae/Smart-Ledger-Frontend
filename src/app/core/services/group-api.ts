@@ -7,7 +7,7 @@ import { Group } from '../../shared/models/group';
 })
 export class GroupService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/groups';
+  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/groups';
 
   getGroups(): Observable<Group[]> {
     return this.http.get<Group[]>(this.apiUrl);

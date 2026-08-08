@@ -8,7 +8,7 @@ import { Expense, ApiResponse, PageResponse } from '../../shared/models/expense.
 })
 export class ExpenseApi {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/expenses';
+  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/expenses';
 
   getExpenses(search?: string): Observable<Expense[]> {
     let params = new HttpParams();

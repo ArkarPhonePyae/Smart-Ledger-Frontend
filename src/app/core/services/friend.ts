@@ -18,7 +18,7 @@ export interface Friend {
 })
 export class FriendService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/friends';
+  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/friends';
 
   getFriends(): Observable<Friend[]> {
     return this.http.get<Friend[]>(this.apiUrl);
