@@ -6,7 +6,7 @@ import { Observable, map, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class Auth {
-  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/auth';
+  private apiUrl = 'https://smart-ledger-backend-g024.onrender.com/api/auth';
 
   constructor(private http: HttpClient) {}
 

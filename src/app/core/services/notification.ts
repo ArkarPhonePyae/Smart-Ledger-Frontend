@@ -15,7 +15,7 @@ export interface NotificationItem {
 })
 export class NotificationService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/notifications';
+  private apiUrl = 'https://smart-ledger-backend-g024.onrender.com/api/notifications';
 
   private unreadCountSource = new BehaviorSubject<boolean>(false);
   unread$ = this.unreadCountSource.asObservable();

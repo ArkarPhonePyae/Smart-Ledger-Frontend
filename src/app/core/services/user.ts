@@ -18,7 +18,7 @@ export interface UserProfile {
 })
 export class UserService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/users/profile';
+  private apiUrl = 'https://smart-ledger-backend-g024.onrender.com/api/users/profile';
 
   getProfile(): Observable<{ success: boolean; data: UserProfile }> {
     return this.http.get<{ success: boolean; data: UserProfile }>(this.apiUrl);

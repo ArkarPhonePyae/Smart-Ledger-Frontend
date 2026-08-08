@@ -27,7 +27,7 @@ export interface ReportsResponse {
   providedIn: 'root'
 })
 export class ReportsService {
-  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/reports';
+  private apiUrl = 'https://smart-ledger-backend-g024.onrender.com/api/reports';
 
   constructor(private http: HttpClient) {}
 

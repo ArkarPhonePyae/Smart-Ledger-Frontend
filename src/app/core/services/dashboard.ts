@@ -8,7 +8,7 @@ import { DashboardSummary } from '../../shared/models/dashboard.model';
 })
 export class DashboardService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://smart-ledger-backend-g024.onrender.com/api/dashboard';
+  private apiUrl = 'https://smart-ledger-backend-g024.onrender.com/api/dashboard';
 
   getDashboardSummary(): Observable<DashboardSummary> {
     return this.http.get<any>(`${`${this.apiUrl}/summary`}`).pipe(
