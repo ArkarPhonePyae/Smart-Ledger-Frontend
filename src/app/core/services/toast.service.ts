@@ -10,7 +10,6 @@ export class ToastService {
     const toast: Toast = { id: this.nextId++, message, type };
     this.toasts.update((list) => [...list, toast]);
 
-    // Matches original 3s display + 300ms fade-out removal.
     setTimeout(() => {
       this.dismiss(toast.id);
     }, 3000);

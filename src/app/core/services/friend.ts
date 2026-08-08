@@ -4,8 +4,10 @@ import { Observable } from 'rxjs';
 
 export interface Friend {
   id?: string;
+  friendUserId?: string;
   friendName: string;
   friendEmail: string;
+  avatarUrl?: string;
   status: string;
   balanceStatus: string;
   balanceAmount: number;

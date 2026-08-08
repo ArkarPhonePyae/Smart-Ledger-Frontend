@@ -1,24 +1,152 @@
-<div appFadeInView class="space-y-8">
-  <div>
-    <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Enterprise Admin Panel</h1>
-    <p class="text-sm text-slate-500 mt-1">System metrics, user role management, and audit security
-      logs.</p>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="glass-card p-6 rounded-2xl apple-shadow">
-      <p class="text-xs font-semibold uppercase text-slate-500">Total System Users</p>
-      <h3 class="text-2xl md:text-3xl font-bold mt-2">24,592</h3>
-      <span class="text-xs text-emerald-500 mt-2 block">+342 today</span>
+<div appFadeInView class="space-y-6 md:space-y-8 relative">
+    <div>
+        <h1 class="text-xl md:text-3xl font-bold tracking-tight">Enterprise Admin Panel</h1>
+        <p class="text-xs md:text-sm text-slate-500 mt-1">System metrics, user role management, security control, and support tickets.</p>
     </div>
-    <div class="glass-card p-6 rounded-2xl apple-shadow">
-      <p class="text-xs font-semibold uppercase text-slate-500">Active Transactions</p>
-      <h3 class="text-2xl md:text-3xl font-bold mt-2">$1.4M</h3>
-      <span class="text-xs text-primary mt-2 block">Secure escrow active</span>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+        <div class="glass-card p-5 md:p-6 rounded-2xl apple-shadow">
+            <p class="text-xs font-semibold uppercase text-slate-500">Total System Users</p>
+            <h3 class="text-2xl md:text-3xl font-bold mt-2">{{ metrics.totalUsers }}</h3>
+            <span class="text-xs text-emerald-500 mt-2 block">Live database count</span>
+        </div>
+
+        <div class="glass-card p-5 md:p-6 rounded-2xl apple-shadow">
+            <p class="text-xs font-semibold uppercase text-slate-500">Total Groups Created</p>
+            <h3 class="text-2xl md:text-3xl font-bold mt-2">{{ metrics.totalGroups }}</h3>
+            <span class="text-xs text-primary mt-2 block">Active debt groups</span>
+        </div>
+
+        <div class="glass-card p-5 md:p-6 rounded-2xl apple-shadow">
+            <p class="text-xs font-semibold uppercase text-slate-500">Security Status</p>
+            <h3 class="text-2xl md:text-3xl font-bold mt-2 text-emerald-500">{{ metrics.securityStatus }}</h3>
+            <span class="text-xs text-slate-400 mt-2 block">Zero threats detected</span>
+        </div>
     </div>
-    <div class="glass-card p-6 rounded-2xl apple-shadow">
-      <p class="text-xs font-semibold uppercase text-slate-500">Security Status</p>
-      <h3 class="text-2xl md:text-3xl font-bold mt-2 text-emerald-500">Protected</h3>
-      <span class="text-xs text-slate-400 mt-2 block">Zero threats detected</span>
+
+    <div class="glass-card p-4 md:p-6 rounded-2xl apple-shadow space-y-4 overflow-hidden">
+        <div>
+            <h3 class="text-base md:text-lg font-bold">User Management & Security Control</h3>
+            <p class="text-xs text-slate-500">Manage system accounts, assign roles, or restrict access (Ban/Unban).</p>
+        </div>
+
+        <div class="w-full overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-700 text-xs text-slate-400 uppercase">
+                    <th class="py-3 px-4">ID</th>
+                    <th class="py-3 px-4">Username</th>
+                    <th class="py-3 px-4">Email</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="text-sm">
+                <tr *ngFor="let u of users" class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50">
+                    <td class="py-3 px-4 font-medium text-xs text-slate-400">#{{ u.id.substring(0, 8) }}...</td>
+                    <td class="py-3 px-4 font-semibold text-slate-800 dark:text-slate-100">{{ u.fullName }}</td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-300">{{ u.email }}</td>
+                    <td class="py-3 px-4">
+                        <span [class]="u.active ? 'bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full text-xs font-medium' : 'bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full text-xs font-medium'">
+                            {{ u.active ? 'Active' : 'Banned' }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <button (click)="toggleUserStatus(u)" [class]="u.active ? 'bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer' : 'bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer'">
+                            {{ u.active ? 'Ban User' : 'Unban' }}
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="users.length === 0 && !loadingUsers">
+                    <td colspan="5" class="text-center py-6 text-slate-400">No users found.</td>
+                </tr>
+                <tr *ngIf="loadingUsers">
+                    <td colspan="5" class="text-center py-6 text-slate-400">Loading users...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
+
+    <div class="glass-card p-4 md:p-6 rounded-2xl apple-shadow space-y-4 overflow-hidden">
+        <div>
+            <h3 class="text-base md:text-lg font-bold">User Support Tickets</h3>
+            <p class="text-xs text-slate-500">Review inquiries and complaints submitted by users through the Help Center.</p>
+        </div>
+
+        <div class="w-full overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[650px]">
+                <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-700 text-xs text-slate-400 uppercase">
+                    <th class="py-3 px-4">ID</th>
+                    <th class="py-3 px-4">User Email</th>
+                    <th class="py-3 px-4">Subject</th>
+                    <th class="py-3 px-4">Message</th>
+                    <th class="py-3 px-4 text-right">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="text-sm">
+                <tr *ngFor="let ticket of tickets" class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/50">
+                    <td class="py-3 px-4 font-medium text-xs text-slate-400">#{{ ticket.id.substring(0, 8) }}...</td>
+                    <td class="py-3 px-4 text-primary">{{ ticket.email }}</td>
+                    <td class="py-3 px-4 font-semibold">{{ ticket.subject }}</td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-300 max-w-xs truncate cursor-pointer hover:underline" (click)="openTicketModal(ticket)" title="Click to view full message">
+                        {{ ticket.message }}
+                    </td>
+                    <td class="py-3 px-4 text-right space-x-2">
+                        <button (click)="openTicketModal(ticket)" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer">
+                            View
+                        </button>
+                        <button (click)="deleteTicket(ticket.id)" class="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="tickets.length === 0 && !loadingTickets">
+                    <td colspan="5" class="text-center py-6 text-slate-400">No support tickets found.</td>
+                </tr>
+                <tr *ngIf="loadingTickets">
+                    <td colspan="5" class="text-center py-6 text-slate-400">Loading tickets...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="glass-card bg-white dark:bg-slate-900 w-full max-w-lg p-6 rounded-2xl apple-shadow space-y-4 border border-slate-200 dark:border-slate-800">
+            <div class="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <span class="text-xs font-semibold uppercase text-primary">Support Ticket Detail</span>
+                    <h3 class="text-xl font-bold mt-1">{{ selectedTicket?.subject }}</h3>
+                </div>
+                <button (click)="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold cursor-pointer">
+                    &times;
+                </button>
+            </div>
+
+            <div class="space-y-3 text-sm">
+                <div>
+                    <p class="text-xs text-slate-400 uppercase font-semibold">User Email</p>
+                    <p class="font-medium text-slate-800 dark:text-slate-200">{{ selectedTicket?.email }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-slate-400 uppercase font-semibold">Full Message</p>
+                    <div class="mt-1 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-slate-700 dark:text-slate-300 whitespace-pre-wrap max-h-60 overflow-y-auto leading-relaxed border border-slate-100 dark:border-slate-800">
+                        {{ selectedTicket?.message }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button (click)="closeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold cursor-pointer transition-all">
+                    Close
+                </button>
+                <button (click)="deleteTicket(selectedTicket!.id)" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-semibold cursor-pointer transition-all">
+                    Delete Ticket
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

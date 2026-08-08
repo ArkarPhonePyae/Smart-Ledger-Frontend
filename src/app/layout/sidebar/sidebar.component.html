@@ -1,75 +1,90 @@
-<!-- MOBILE RESPONSIVE DRAWER BACKDROP -->
 <div (click)="closeMobileDrawer()"
-     class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden transition-opacity"
+     class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40 md:hidden transition-opacity"
      [class.hidden]="!isMobileDrawerOpen()"></div>
 
-<!-- SIDEBAR (Desktop Collapsible & Mobile Responsive Drawer) -->
 <aside
-        class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between z-50 flex-shrink-0 transition-all duration-300 fixed md:relative inset-y-0 left-0 md:translate-x-0"
+        class="bg-white/80 dark:bg-slate-950/85 backdrop-blur-2xl border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col justify-between z-50 flex-shrink-0 transition-all duration-300 fixed md:relative inset-y-0 left-0 md:translate-x-0 shadow-2xl md:shadow-none"
         [class.-translate-x-full]="!isMobileDrawerOpen()"
-        [style.width.px]="isCollapsed() ? 80 : 256">
+        [style.width.px]="isCollapsed() ? 80 : 264">
     <div>
-        <!-- Logo & Desktop Collapse Toggle -->
-        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800/60">
-            <div class="flex items-center gap-3 overflow-hidden">
-                <div
-                        class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-indigo-500 flex items-center justify-center text-white font-bold shadow-lg shadow-primary/30 flex-shrink-0">
-                    A
+        <div class="h-20 flex items-center justify-between px-5 border-b border-slate-100 dark:border-slate-800/50">
+            <div class="flex items-center gap-3 overflow-hidden cursor-pointer group">
+                <!-- PNG Logo Container -->
+                <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 transform group-hover:scale-105 transition-transform duration-300">
+                    <img src="assets/logo.png" alt="AuraPay Logo" class="w-full h-full object-contain drop-shadow-md">
                 </div>
-                <span *ngIf="!isCollapsed()"
-                      class="font-bold text-lg tracking-tight bg-gradient-to-r from-primary to-indigo-500 bg-clip-text text-transparent truncate">AuraPay</span>
+
+                <div *ngIf="!isCollapsed()" class="flex flex-col truncate">
+                    <span class="font-black text-xl tracking-tight bg-gradient-to-r from-slate-900 via-primary to-cyan-500 dark:from-white dark:via-blue-400 dark:to-cyan-400 bg-clip-text text-transparent truncate">
+                        AuraPay
+                    </span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 -mt-0.5">
+                        Smart Ledger
+                    </span>
+                </div>
             </div>
+
             <button (click)="toggleCollapse()"
-                    class="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    class="hidden md:flex p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all cursor-pointer">
                 <lucide-icon name="chevron-left" class="w-4 h-4" [class.rotate-180]="isCollapsed()"
-                             style="transition: transform 0.2s;"></lucide-icon>
+                             style="transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);"></lucide-icon>
             </button>
         </div>
 
-        <!-- Navigation Menu -->
-        <nav class="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-140px)]">
+        <nav class="p-4 space-y-2 overflow-y-auto max-h-[calc(100vh-160px)] custom-scrollbar">
             @for (item of navItems; track item.target) {
-                <!-- isAdmin() function ကို သုံး၍ Admin ဟုတ်မဟုတ် သေချာစွာ စစ်ဆေးခြင်း -->
                 <a *ngIf="!item.adminOnly || isAdmin()"
-                   [routerLink]="['/', item.target]" routerLinkActive="bg-primary text-white font-medium shadow-md shadow-primary/25"
+                   [routerLink]="['/', item.target]"
+                   routerLinkActive="bg-gradient-to-r from-primary to-indigo-600 text-white font-semibold shadow-lg shadow-primary/30 ring-1 ring-white/20"
                    [routerLinkActiveOptions]="{ exact: false }"
                    #rla="routerLinkActive"
-                   class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all group cursor-pointer"
-                   [ngClass]="rla.isActive ? '' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-medium'">
-                    <lucide-icon [name]="item.icon" class="w-5 h-5 flex-shrink-0"></lucide-icon>
-                    <span *ngIf="!isCollapsed()" class="truncate">{{ item.label }}</span>
+                   class="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 group cursor-pointer relative overflow-hidden"
+                   [ngClass]="rla.isActive ? '' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-100 font-medium'">
+
+                    <div *ngIf="rla.isActive" class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                    <lucide-icon [name]="item.icon" class="w-5 h-5 flex-shrink-0 transition-transform group-hover:scale-110 duration-200"></lucide-icon>
+                    <span *ngIf="!isCollapsed()" class="truncate tracking-wide text-sm">{{ item.label }}</span>
                 </a>
             }
         </nav>
     </div>
 
-    <!-- User Profile Preview & Dropdown -->
-    <div class="p-4 border-t border-slate-100 dark:border-slate-800/60 relative">
+    <div class="p-4 border-t border-slate-100 dark:border-slate-800/60 relative bg-slate-50/50 dark:bg-slate-900/30">
         <div (click)="toggleUserDropdown($event)"
-             class="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces"
-                 class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+             class="flex items-center gap-3 p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 hover:border-primary/50 dark:hover:border-primary/50 cursor-pointer transition-all shadow-sm hover:shadow-md">
+
+            <!-- Sidebar Avatar -->
+            <ng-container *ngIf="currentUser?.avatarUrl && currentUser?.avatarUrl?.trim() !== ''; else sidebarInitials">
+                <img [src]="currentUser?.avatarUrl" class="w-10 h-10 rounded-xl object-cover flex-shrink-0 ring-2 ring-primary/20 shadow-sm">
+            </ng-container>
+
+            <ng-template #sidebarInitials>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-indigo-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-md ring-2 ring-primary/20">
+                    {{ getInitials(currentUser?.fullName) }}
+                </div>
+            </ng-template>
+
             <div *ngIf="!isCollapsed()" class="flex-1 min-w-0">
-                <h4 class="text-sm font-semibold truncate">Alex Morgan</h4>
-                <p class="text-xs text-slate-500 truncate">{{ isAdmin() ? 'Admin User' : 'Pro Member' }}</p>
+                <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{{ currentUser?.fullName || 'User' }}</h4>
+                <p class="text-[11px] font-medium text-primary dark:text-indigo-400 truncate">{{ isAdmin() ? 'Admin User' : (currentUser?.proMember ? 'Pro Enterprise' : 'Standard Member') }}</p>
             </div>
-            <lucide-icon *ngIf="!isCollapsed()" name="chevron-up" class="w-4 h-4 text-slate-400 flex-shrink-0"></lucide-icon>
+            <lucide-icon *ngIf="!isCollapsed()" name="chevron-up" class="w-4 h-4 text-slate-400 flex-shrink-0 transition-transform" [class.rotate-180]="isUserDropdownOpen()"></lucide-icon>
         </div>
 
-        <!-- User Dropdown Menu -->
         <div *ngIf="isUserDropdownOpen()"
-             class="absolute bottom-16 left-4 right-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-2 shadow-2xl z-50 animate-modal">
+             class="absolute bottom-20 left-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/80 dark:border-slate-700/80 rounded-2xl p-2.5 shadow-2xl z-50 animate-modal space-y-1">
             <button (click)="goToProfile()"
-                    class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-medium">
+                    class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium cursor-pointer transition-colors">
                 <lucide-icon name="user" class="w-4 h-4 text-primary"></lucide-icon> Profile Page
             </button>
             <button (click)="goToSettings()"
-                    class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-medium">
+                    class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium cursor-pointer transition-colors">
                 <lucide-icon name="sliders" class="w-4 h-4 text-slate-400"></lucide-icon> Preferences
             </button>
             <div class="h-px bg-slate-200 dark:bg-slate-800 my-1"></div>
             <button (click)="logout()"
-                    class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-danger/10 text-danger text-sm font-medium">
+                    class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-rose-500/10 text-rose-500 text-sm font-medium cursor-pointer transition-colors">
                 <lucide-icon name="log-out" class="w-4 h-4"></lucide-icon> Logout
             </button>
         </div>

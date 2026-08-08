@@ -6,6 +6,7 @@ import { ToastService } from '../../core/services/toast.service';
 import { GroupService } from '../../core/services/group-api';
 import { FriendService, Friend } from '../../core/services/friend';
 import { Group } from '../../shared/models/group';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-groups',
@@ -18,6 +19,7 @@ export class GroupsComponent implements OnInit {
   private friendService = inject(FriendService);
   private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   groups: Group[] = [];
   friends: Friend[] = [];
@@ -54,7 +56,6 @@ export class GroupsComponent implements OnInit {
   loadFriends(): void {
     this.friendService.getFriends().subscribe({
       next: (data) => {
-        // Friends စာရင်းမှ 'ACCEPTED' ဖြစ်ပြီးသားသူများကိုသာ Group တွင် ထည့်ရန် Filter လုပ်မည်
         this.friends = data.filter(f => f.status === 'ACCEPTED' || f.status === 'FRIENDS');
         this.cdr.detectChanges();
       }
@@ -109,7 +110,8 @@ export class GroupsComponent implements OnInit {
   }
 
   manageGroup(group: Group): void {
-    this.toast.show(`Opening ${group.name} details...`, 'success' as any);
+    if (!group.id) return;
+    this.router.navigate(['/groups', group.id]);
   }
 
   deleteGroup(id: string): void {

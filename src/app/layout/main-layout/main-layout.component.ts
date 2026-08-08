@@ -23,7 +23,6 @@ import { UiStateService } from '../../core/services/ui-state.service';
 export class MainLayoutComponent {
   private ui = inject(UiStateService);
 
-  // 5. Command Palette (Ctrl + K) / Escape handling — originally on window keydown.
   @HostListener('window:keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
     if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
@@ -36,7 +35,6 @@ export class MainLayoutComponent {
     }
   }
 
-  // 4. User Dropdown Menu Toggle — originally closes on any window click.
   @HostListener('window:click')
   handleWindowClick(): void {
     this.ui.closeUserDropdown();

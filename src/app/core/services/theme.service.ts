@@ -1,4 +1,3 @@
-// theme.service.ts
 import { Injectable, signal } from "@angular/core";
 
 @Injectable({ providedIn: 'root' })
@@ -6,7 +5,6 @@ export class ThemeService {
   readonly isDark = signal<boolean>(true);
 
   constructor() {
-    // 👈 App စစချင်း LocalStorage ထဲက Theme ကို ပြန်ဖတ်ရန်
     const savedTheme = localStorage.getItem('darkMode');
     if (savedTheme !== null) {
       const isDarkParsed = JSON.parse(savedTheme);

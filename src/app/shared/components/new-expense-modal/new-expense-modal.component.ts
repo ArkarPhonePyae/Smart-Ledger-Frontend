@@ -30,19 +30,35 @@ export class NewExpenseModalComponent implements OnInit {
   paymentMethod = 'Cash';
   notes = '';
   groupId: string | null = null;
+  expenseDate: string = '';
   groups: Group[] = [];
 
   ngOnInit(): void {
-    // Groups list for the optional "share with group" dropdown.
+    this.loadGroups();
+  }
+
+  loadGroups(): void {
     this.groupService.getGroups().subscribe({
-      next: (data) => (this.groups = data),
-      error: () => (this.groups = []),
+      next: (data) => {
+        this.groups = data || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.groups = [];
+        this.cdr.detectChanges();
+      },
     });
   }
 
   constructor() {
     effect(() => {
+      if (this.isOpen()) {
+        this.loadGroups();
+      }
+
       const data = this.ui.editingExpense();
+      const activeGroupId = this.ui.selectedGroupId();
+
       if (data) {
         this.id = data.id || data._id || null;
         this.title = data.title || '';
@@ -50,12 +66,21 @@ export class NewExpenseModalComponent implements OnInit {
         this.category = data.category || 'General';
         this.paymentMethod = data.paymentMethod || 'Cash';
         this.notes = data.notes || '';
-        this.groupId = data.groupId || null;
+        this.groupId = data.groupId || activeGroupId;
+        this.expenseDate = data.createdAt ? data.createdAt.substring(0, 16) : this.getCurrentDateTimeLocal();
       } else {
         this.resetForm();
+        this.groupId = activeGroupId;
+        this.expenseDate = this.getCurrentDateTimeLocal();
       }
       this.cdr.detectChanges();
     });
+  }
+
+  private getCurrentDateTimeLocal(): string {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
   }
 
   close(): void {
@@ -75,13 +100,14 @@ export class NewExpenseModalComponent implements OnInit {
       category: this.category,
       paymentMethod: this.paymentMethod,
       notes: this.notes,
-      groupId: this.groupId || null
+      createdAt: this.expenseDate ? new Date(this.expenseDate).toISOString() : new Date().toISOString(),
+      ...(this.groupId && { groupId: this.groupId })
     };
 
     if (this.id) {
       this.expenseApi.updateExpense(this.id, payload).subscribe({
         next: () => {
-          this.toast.show('Expense updated successfully!', 'success');
+          this.toast.show('Expense updated successfully!', 'success' as any);
           this.ui.closeNewExpenseModal();
           this.ui.triggerRefresh();
           this.resetForm();
@@ -94,7 +120,7 @@ export class NewExpenseModalComponent implements OnInit {
     } else {
       this.expenseApi.addExpense(payload).subscribe({
         next: () => {
-          this.toast.show('Expense added successfully!', 'success');
+          this.toast.show('Expense added successfully!', 'success' as any);
           this.ui.closeNewExpenseModal();
           this.ui.triggerRefresh();
           this.resetForm();
@@ -115,5 +141,6 @@ export class NewExpenseModalComponent implements OnInit {
     this.paymentMethod = 'Cash';
     this.notes = '';
     this.groupId = null;
+    this.expenseDate = this.getCurrentDateTimeLocal();
   }
 }

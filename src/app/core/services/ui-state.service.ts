@@ -9,9 +9,19 @@ export class UiStateService {
 
   readonly isNewExpenseModalOpen = signal(false);
   readonly editingExpense = signal<any | null>(null);
+  readonly selectedGroupId = signal<string | null>(null);
 
-  // 👈 List ကို ချက်ချင်း refresh လုပ်ပေးမည့် callback function
   private refreshCallback: (() => void) | null = null;
+
+  setSelectedGroupId(groupId: string | null): void {
+    this.selectedGroupId.set(groupId);
+  }
+
+  openNewExpenseModalForGroup(groupId: string): void {
+    this.selectedGroupId.set(groupId);
+    this.editingExpense.set(null);
+    this.isNewExpenseModalOpen.set(true);
+  }
 
   setRefreshCallback(callback: () => void): void {
     this.refreshCallback = callback;

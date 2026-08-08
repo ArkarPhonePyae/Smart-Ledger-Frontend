@@ -7,20 +7,24 @@
                     <lucide-icon name="x" class="w-5 h-5"></lucide-icon>
                 </button>
             </div>
-            <div class="space-y-4 text-sm">
+            <div class="space-y-4 text-sm max-h-[70vh] overflow-y-auto pr-1">
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Title</label>
                     <input type="text" [(ngModel)]="title" placeholder="e.g. Dinner, Taxi, Groceries"
                            class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Amount ($)</label>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Amount</label>
                     <input type="number" [(ngModel)]="amount" placeholder="0.00"
                            class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary">
                 </div>
                 <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Date & Time</label>
+                    <input type="datetime-local" [(ngModel)]="expenseDate"
+                           class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none border border-transparent focus:border-primary text-sm">
+                </div>
+                <div>
                     <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Category</label>
-                    <!-- 👈 Expenses Component ရှိ Dropdown နဲ့ Value များကို အတူတူဖြစ်အောင် ပြင်ဆင်ထားသည် -->
                     <select [(ngModel)]="category" class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none">
                         <option value="General">General</option>
                         <option value="Food & Drinks">Food & Drinks</option>
@@ -28,7 +32,6 @@
                         <option value="Bills & Utilities">Bills & Utilities</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Group (optional)</label>
                     <select [(ngModel)]="groupId" class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none">
@@ -38,7 +41,6 @@
                         }
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Payment Method</label>
                     <select [(ngModel)]="paymentMethod" class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl outline-none">
@@ -48,7 +50,6 @@
                         <option value="Mobile Wallet">Mobile Wallet</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Notes</label>
                     <textarea [(ngModel)]="notes" placeholder="Optional notes..." rows="2"

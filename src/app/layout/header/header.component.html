@@ -1,53 +1,55 @@
 <header
-  class="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 md:px-8 z-30">
-  <div class="flex items-center gap-3">
-    <!-- Mobile Drawer Toggle Button -->
-    <button (click)="toggleMobileDrawer()"
-      class="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-      <lucide-icon name="menu" class="w-5 h-5"></lucide-icon>
-    </button>
-    <!-- Global Search & Command Palette trigger -->
-    <div class="w-48 md:w-80">
-      <div (click)="openCommandPalette()" class="relative w-full cursor-pointer">
+        class="h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 md:px-8 z-30 gap-2">
+    <div class="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+        <!-- Mobile Drawer Toggle Button -->
+        <button (click)="toggleMobileDrawer()"
+                class="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex-shrink-0 cursor-pointer">
+            <lucide-icon name="menu" class="w-5 h-5"></lucide-icon>
+        </button>
+        <!-- Global Search & Command Palette trigger -->
+        <div class="w-full max-w-[200px] sm:w-48 md:w-80">
+            <div (click)="openCommandPalette()" class="relative w-full cursor-pointer">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
           <lucide-icon name="search" class="w-4 h-4"></lucide-icon>
         </span>
-        <input type="text" readonly placeholder="Search or press Ctrl + K..."
-          class="w-full pl-9 pr-12 py-2 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-sm border border-transparent hover:border-primary/50 outline-none cursor-pointer transition-colors">
-        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <input type="text" readonly placeholder="Search..."
+                       class="w-full pl-9 pr-8 md:pr-12 py-1.5 md:py-2 bg-slate-100 dark:bg-slate-800/60 rounded-xl text-xs md:text-sm border border-transparent hover:border-primary/50 outline-none cursor-pointer truncate transition-colors">
+                <span class="absolute inset-y-0 right-0 hidden sm:flex items-center pr-3 pointer-events-none">
           <kbd
-            class="px-1.5 py-0.5 text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded">⌘K</kbd>
+                  class="px-1.5 py-0.5 text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded">⌘K</kbd>
         </span>
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="flex items-center gap-3">
-    <!-- Help Center Button -->
-    <button (click)="goTo('help')"
-      class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-      title="Help Center">
-      <lucide-icon name="help-circle" class="w-5 h-5"></lucide-icon>
-    </button>
-    <!-- Theme Toggle -->
-    <button (click)="toggleTheme()"
-      class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-      title="Toggle Theme">
-      <lucide-icon *ngIf="theme.isDark()" name="moon" class="w-5 h-5"></lucide-icon>
-      <lucide-icon *ngIf="!theme.isDark()" name="sun" class="w-5 h-5"></lucide-icon>
-    </button>
-    <!-- Notification Center Button -->
-    <button (click)="goTo('notifications')"
-      class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-      title="Notifications">
-      <lucide-icon name="bell" class="w-5 h-5"></lucide-icon>
-      <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-danger animate-pulse"></span>
-    </button>
-    <!-- Soft Gradient Button for New Expense -->
-    <button (click)="openNewExpenseModal()"
-      class="flex items-center gap-2 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-lg shadow-primary/25 transition-all transform active:scale-95">
-      <lucide-icon name="plus" class="w-4 h-4"></lucide-icon>
-      <span class="hidden sm:inline">New Expense</span>
-    </button>
-  </div>
+    <div class="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
+        <!-- Help Center Button -->
+        <button (click)="goTo('help')"
+                class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Help Center">
+            <lucide-icon name="help-circle" class="w-5 h-5"></lucide-icon>
+        </button>
+        <!-- Theme Toggle -->
+        <button (click)="toggleTheme()"
+                class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Toggle Theme">
+            <lucide-icon *ngIf="theme.isDark()" name="moon" class="w-5 h-5"></lucide-icon>
+            <lucide-icon *ngIf="!theme.isDark()" name="sun" class="w-5 h-5"></lucide-icon>
+        </button>
+        <!-- Notification Center Button -->
+        <button (click)="goTo('notifications')"
+                class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                title="Notifications">
+            <lucide-icon name="bell" class="w-5 h-5"></lucide-icon>
+            @if (hasUnreadNotifications) {
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-danger animate-pulse"></span>
+            }
+        </button>
+        <!-- Soft Gradient Button for New Expense -->
+        <button (click)="openNewExpenseModal()"
+                class="flex items-center gap-2 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white px-3 md:px-4 py-2 rounded-xl text-xs md:text-sm font-medium shadow-lg shadow-primary/25 transition-all transform active:scale-95 cursor-pointer">
+            <lucide-icon name="plus" class="w-4 h-4"></lucide-icon>
+            <span class="hidden sm:inline">New Expense</span>
+        </button>
+    </div>
 </header>

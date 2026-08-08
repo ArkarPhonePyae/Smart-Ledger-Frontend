@@ -15,7 +15,13 @@ export interface DashboardSummary {
     youOwe: number;
     youAreOwed: number;
     activeGroups: number;
+    totalPersonalExpense?: number;
+    totalGroupExpense?: number;
     inflowChart: number[];
     outflowChart: number[];
+    isUserDebtor?: boolean;
     recentActivity: RecentActivityItem[];
+    aiInsightText?: string;
+    aiInsightAmount?: number;
+    aiInsightPayeeName?: string;
 }

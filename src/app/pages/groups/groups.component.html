@@ -10,13 +10,11 @@
         </button>
     </div>
 
-    <!-- Loading State -->
     @if (isLoading) {
         <div class="text-center py-12">
             <p class="text-sm text-slate-400 animate-pulse">Loading groups...</p>
         </div>
     } @else {
-        <!-- Groups Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @if (groups.length > 0) {
                 @for (group of groups; track group.id) {
@@ -52,7 +50,6 @@
         </div>
     }
 
-    <!-- Create Group Modal / Overlay -->
     @if (showCreateModal) {
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div class="glass-card bg-slate-900 border border-slate-700 w-full max-w-md p-6 rounded-2xl space-y-5 shadow-2xl">
@@ -80,18 +77,22 @@
                             @if (friends.length > 0) {
                                 @for (friend of friends; track friend.id) {
                                     <div class="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg cursor-pointer"
-                                         (click)="toggleMemberSelection(friend.id)">
+                                         (click)="toggleMemberSelection(friend.friendUserId || friend.id!)">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                                                {{ friend.friendName.charAt(0).toUpperCase() }}
-                                            </div>
+                                            @if (friend.avatarUrl) {
+                                                <img [src]="friend.avatarUrl" class="w-8 h-8 rounded-full object-cover">
+                                            } @else {
+                                                <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                                                    {{ friend.friendName.charAt(0).toUpperCase() }}
+                                                </div>
+                                            }
                                             <div>
                                                 <p class="text-xs font-semibold text-white">{{ friend.friendName }}</p>
                                                 <p class="text-[10px] text-slate-400">{{ friend.friendEmail }}</p>
                                             </div>
                                         </div>
-                                        <input type="checkbox" [checked]="selectedMemberIds.includes(friend.id!)"
-                                               class="rounded border-slate-700 bg-slate-800 text-primary focus:ring-0 cursor-pointer" />
+                                        <input type="checkbox" [checked]="selectedMemberIds.includes(friend.friendUserId || friend.id!)"
+                                               class="rounded border-slate-700 bg-slate-800 text-primary focus:ring-0 cursor-pointer pointer-events-none" />
                                     </div>
                                 }
                             } @else {

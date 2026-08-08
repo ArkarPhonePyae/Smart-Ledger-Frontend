@@ -1,0 +1,195 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-100 dark:bg-slate-950 p-4 overflow-y-auto">
+    <!-- Background Glow Effects -->
+    <div class="absolute -top-32 -left-32 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Main Card Container -->
+    <div class="relative w-full max-w-md max-h-[92vh] overflow-y-auto p-6 sm:p-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl shadow-2xl shadow-slate-200/50 dark:shadow-none my-auto custom-scrollbar">
+
+        <!-- Logo & Branding Header -->
+        <div class="flex flex-col items-center justify-center mb-6 text-center relative">
+            <div class="absolute w-24 h-24 bg-gradient-to-tr from-blue-600/30 via-teal-400/30 to-indigo-500/30 rounded-full blur-xl pointer-events-none"></div>
+
+            <!-- PNG Logo Container -->
+            <div class="relative flex items-center justify-center mb-2">
+                <div class="w-16 h-16 flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
+                    <img src="assets/logo.png" alt="AuraPay Logo" class="w-full h-full object-contain drop-shadow-xl">
+                </div>
+            </div>
+
+            <h2 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-blue-600 to-teal-500 dark:from-white dark:via-blue-400 dark:to-teal-400 bg-clip-text text-transparent">
+                {{ currentStep === 1 ? 'Create AuraPay Account' : 'Verify Security Code' }}
+            </h2>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mt-0.5">
+                {{ currentStep === 1 ? 'Join the modern smart ledger' : 'Check your email inbox' }}
+            </p>
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="errorMessage" class="mb-4 p-3 text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-2xl flex items-center gap-2">
+            <span>⚠️</span> {{ errorMessage }}
+        </div>
+
+        <!-- Success Alert -->
+        <div *ngIf="successMessage" class="mb-4 p-3 text-sm text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl flex items-center gap-2">
+            {{ successMessage }}
+        </div>
+
+        <!-- STEP 1: Registration Form -->
+        <form *ngIf="currentStep === 1" (submit)="onRegister(); $event.preventDefault()" class="space-y-3.5">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">Full Name</label>
+                <input
+                        type="text"
+                        [(ngModel)]="fullName"
+                        name="fullName"
+                        required
+
+                        class="w-full px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 rounded-2xl text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/50 focus:border-blue-600 transition-all text-sm">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">Email Address</label>
+                <input
+                        type="email"
+                        [(ngModel)]="email"
+                        name="email"
+                        required
+
+                        class="w-full px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 rounded-2xl text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/50 focus:border-blue-600 transition-all text-sm">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">Phone Number</label>
+                <input
+                        type="text"
+                        [(ngModel)]="phone"
+                        name="phone"
+                        required
+                        placeholder="09xxxxxxxxx"
+                        class="w-full px-4 py-2.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 rounded-2xl text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/50 focus:border-blue-600 transition-all text-sm">
+            </div>
+
+            <!-- Password with Show/Hide Eye Toggle -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">Password</label>
+                <div class="relative">
+                    <input
+                            [type]="showPassword ? 'text' : 'password'"
+                            [(ngModel)]="password"
+                            (ngModelChange)="onPasswordChange()"
+                            name="password"
+                            required
+
+                            class="w-full px-4 py-2.5 pr-10 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 rounded-2xl text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/50 focus:border-blue-600 transition-all text-sm">
+                    <button
+                            type="button"
+                            (click)="togglePasswordVisibility()"
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none cursor-pointer">
+                        <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.07 10.07 0 014.213-5.22m5.69-1.556a9.974 9.974 0 013.639.776M15 12a3 3 0 11-4.243-4.243m4.243 4.243L9.878 9.878m4.242 4.242L3 3m18 18l-6-6" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Password Strength Rules Checklist -->
+                <div *ngIf="isPasswordTouched" class="mt-2 text-xs space-y-1 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                    <p class="font-bold text-slate-600 dark:text-slate-300 mb-1">Password Requirements:</p>
+                    <div [ngClass]="hasMinLength ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-slate-400'" class="flex items-center gap-1.5">
+                        <span>{{ hasMinLength ? '✓' : '•' }}</span> At least 8 characters
+                    </div>
+                    <div [ngClass]="hasUpperCase ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-slate-400'" class="flex items-center gap-1.5">
+                        <span>{{ hasUpperCase ? '✓' : '•' }}</span> One uppercase letter (A-Z)
+                    </div>
+                    <div [ngClass]="hasLowerCase ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-slate-400'" class="flex items-center gap-1.5">
+                        <span>{{ hasLowerCase ? '✓' : '•' }}</span> One lowercase letter (a-z)
+                    </div>
+                    <div [ngClass]="hasNumber ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-slate-400'" class="flex items-center gap-1.5">
+                        <span>{{ hasNumber ? '✓' : '•' }}</span> One number (0-9)
+                    </div>
+                    <div [ngClass]="hasSpecialChar ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-slate-400'" class="flex items-center gap-1.5">
+                        <span>{{ hasSpecialChar ? '✓' : '•' }}</span> One special character ($!%*?&)
+                    </div>
+                </div>
+            </div>
+
+            <button
+                    type="submit"
+                    [disabled]="!isPasswordValid || isLoading"
+                    [ngClass]="isPasswordValid ? 'bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 shadow-lg shadow-blue-500/25 cursor-pointer' : 'bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed'"
+                    class="w-full mt-2 py-3 text-white font-bold rounded-2xl transition-all duration-300 flex items-center justify-center text-sm">
+                <span *ngIf="!isLoading">Next (Send OTP)</span>
+                <span *ngIf="isLoading" class="flex items-center gap-2">
+                    <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sending Code...
+                </span>
+            </button>
+
+            <div class="text-center text-sm text-slate-500 dark:text-slate-400 pt-1">
+                Already have an account?
+                <a routerLink="/login" class="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer ml-1">Sign in</a>
+            </div>
+        </form>
+
+        <!-- STEP 2: OTP Verification Form -->
+        <form *ngIf="currentStep === 2" (submit)="onVerifyOtp(); $event.preventDefault()" class="space-y-4">
+            <p class="text-xs text-slate-500 dark:text-slate-400 text-center leading-relaxed">
+                Enter the 6-digit verification code sent to your email <br><span class="font-bold text-blue-600 dark:text-blue-400">{{ email }}</span>
+            </p>
+
+            <div>
+                <div class="flex justify-center">
+                    <input
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="6"
+                            [(ngModel)]="otpValue"
+                            name="otpValue"
+
+                            class="w-full h-14 text-center text-2xl font-black tracking-[1rem] pl-4 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 rounded-2xl text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/50"
+                    >
+                </div>
+            </div>
+
+            <!-- Countdown Timer Display -->
+            <div class="text-center text-xs text-slate-500 dark:text-slate-400">
+                <span *ngIf="timeLeft > 0">Resend available in <span class="font-bold text-blue-600 dark:text-blue-400">{{ timeLeft }}s</span></span>
+                <span *ngIf="timeLeft === 0" class="text-emerald-600 font-bold">You can now resend the code.</span>
+            </div>
+
+            <button
+                    type="submit"
+                    [disabled]="isLoading"
+                    class="w-full py-3 bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 transition-all duration-300 flex items-center justify-center cursor-pointer text-sm">
+                <span *ngIf="!isLoading">Verify & Complete</span>
+                <span *ngIf="isLoading" class="flex items-center gap-2">
+                    <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Verifying...
+                </span>
+            </button>
+
+            <div class="flex items-center justify-between text-xs pt-2">
+                <button type="button" (click)="currentStep = 1" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium cursor-pointer">
+                    ← Back to Details
+                </button>
+                <button
+                        type="button"
+                        (click)="onResendOtp()"
+                        [disabled]="!canResend || isLoading"
+                        [ngClass]="canResend ? 'text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer' : 'text-slate-400 cursor-not-allowed'">
+                    Resend Code
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

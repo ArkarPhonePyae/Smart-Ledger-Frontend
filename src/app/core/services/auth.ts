@@ -1,35 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { AuthResponse, User } from '../../shared/models/user';
+import { Observable, map, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Auth {
-  private apiUrl = 'http://localhost:8080/api/auth'; // Spring Boot Backend URL
+  private apiUrl = 'http://localhost:8080/api/auth';
 
   constructor(private http: HttpClient) {}
 
   login(credentials: { email: string; password: string }): Observable<any> {
-    // return နှင့် this ကြားတွင် အစက် (.) အစား space ဖြင့် ပြင်ဆင်ရန်
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
-        map(response => {
-          // အကယ်၍ response ထဲတွင် data wrapper ပါလာပါက data ကို ဖြုတ်ထုတ်ပေးမည်
-          return response.data ? response.data : response;
-        })
+        map(response => response.data ? response.data : response)
     );
   }
 
-  register(user: User): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, user).pipe(
-        map(response => (response as any).data ? (response as any).data : response)
+  register(user: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, user).pipe(
+        map(response => response.data ? response.data : response)
+    );
+  }
+
+  verifyOtp(data: { email: string; otp: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/verify-otp`, data).pipe(
+        map(response => response.data ? response.data : response)
     );
   }
 
   logout(): void {
     localStorage.removeItem('token');
-    localStorage.removeItem('role'); // Role ပါ တစ်ခါတည်း ရှင်းလင်းရန်
+    localStorage.removeItem('role');
   }
 
   getToken(): string | null {

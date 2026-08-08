@@ -1,24 +1,24 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { LoginComponent } from './pages/login/login';
+import { RegisterComponent } from './pages/register/register/register';
 import { authGuard } from "./core/guards/auth-guard";
 import { adminGuard } from "./core/guards/admin-guard";
 
 export const routes: Routes = [
-  // 1. App စဖွင့်ချင်း (Root) တွင် Login Page သို့ တိုက်ရိုက် Redirect လုပ်ရန်
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-
-  // 2. Login Page (Layout မပါတဲ့ သီးသန့် Page)
   {
     path: 'login',
     component: LoginComponent
   },
-
-  // 3. Main Layout နဲ့ Page အားလုံး (canActivate ကို Parent အစား Children တစ်ခုချင်းစီ သို့မဟုတ် layout ပေါ်တွင် သေချာချိတ်ရန်)
+  {
+    path: 'register',
+    component: RegisterComponent
+  },
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [authGuard], // Parent မှာထားတာက sub-path တွေနဲ့ ညှိတဲ့အခါ ပြဿနာတက်တတ်ပါသည်
+    canActivate: [authGuard],
     children: [
       {
         path: 'dashboard',
@@ -31,9 +31,24 @@ export const routes: Routes = [
             import('./pages/expenses/expenses.component').then((m) => m.ExpensesComponent),
       },
       {
+        path: 'expenses/new',
+        loadComponent: () =>
+            import('./pages/expenses/expenses.component').then((m) => m.ExpensesComponent),
+      },
+      {
+        path: 'expenses/edit/:id',
+        loadComponent: () =>
+            import('./pages/expenses/expenses.component').then((m) => m.ExpensesComponent),
+      },
+      {
         path: 'groups',
         loadComponent: () =>
             import('./pages/groups/groups.component').then((m) => m.GroupsComponent),
+      },
+      {
+        path: 'groups/:id',
+        loadComponent: () =>
+            import('./features/groups/group-detail/group-detail').then((m) => m.GroupDetailComponent),
       },
       {
         path: 'friends',
@@ -47,7 +62,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
-        canActivate: [adminGuard], // Admin Guard ထပ်စစ်သည်
+        canActivate: [adminGuard],
         loadComponent: () =>
             import('./pages/admin/admin.component').then((m) => m.AdminComponent),
       },
@@ -58,6 +73,11 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
+        loadComponent: () =>
+            import('./pages/profile/profile.component').then((m) => m.ProfileComponent),
+      },
+      {
+        path: 'profile/:id',
         loadComponent: () =>
             import('./pages/profile/profile.component').then((m) => m.ProfileComponent),
       },
@@ -75,7 +95,5 @@ export const routes: Routes = [
       },
     ],
   },
-
-  // 4. မရှိသော လမ်းကြောင်းများအတွက် Login သို့ ပို့ရန်
   { path: '**', redirectTo: 'login' },
 ];

@@ -17,6 +17,8 @@ import { UiStateService } from '../../core/services/ui-state.service';
 import { ToastService } from '../../core/services/toast.service';
 import { DashboardService } from '../../core/services/dashboard';
 import { DashboardSummary } from '../../shared/models/dashboard.model';
+import { SettlementService } from '../../core/services/settlement';
+import { SettingsService } from '../../core/services/settings.service.ts';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +32,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private toast = inject(ToastService);
   private dashboardService = inject(DashboardService);
   private cdr = inject(ChangeDetectorRef);
+  private settlementService = inject(SettlementService);
+  protected settingsService = inject(SettingsService);
 
   @ViewChild('dashboardChart') chartCanvas?: ElementRef<HTMLCanvasElement>;
   private chart?: Chart;
@@ -37,6 +41,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   dashboardData: DashboardSummary | null = null;
   isLoading = true;
   private pendingChartData?: { inflow: number[]; outflow: number[] };
+
+  getCurrencySymbol(): string {
+    return this.settingsService.getSymbol();
+  }
+
+  formatCompactNumber(value: number | null | undefined): string {
+    const num = value ?? 0;
+    if (Math.abs(num) >= 1_000_000) {
+      return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' M';
+    }
+    if (Math.abs(num) >= 1_000) {
+      return (num / 1_000).toFixed(1).replace(/\.0$/, '') + ' k';
+    }
+    return num.toFixed(2);
+  }
 
   ngOnInit(): void {
     this.fetchDashboardData();
@@ -53,11 +72,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.dashboardService.getDashboardSummary().subscribe({
       next: (data) => {
-        console.log('Dashboard Data Received:', data);
         this.dashboardData = data;
         this.isLoading = false;
 
-        // အရေးကြီးဆုံး: Change Detection ကို Force လုပ်ခြင်း
         this.cdr.markForCheck();
         this.cdr.detectChanges();
 
@@ -81,6 +98,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
+
   initChart(inflow: number[], outflow: number[]): void {
     if (!this.chartCanvas) return;
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
@@ -96,7 +114,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         datasets: [
           {
-            label: 'Inflow ($)',
+            label: 'Inflow (' + this.getCurrencySymbol() + ')',
             data: inflow,
             borderColor: '#2563EB',
             backgroundColor: 'rgba(37, 99, 235, 0.1)',
@@ -104,7 +122,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             tension: 0.4,
           },
           {
-            label: 'Outflow ($)',
+            label: 'Outflow (' + this.getCurrencySymbol() + ')',
             data: outflow,
             borderColor: '#22C55E',
             backgroundColor: 'rgba(34, 197, 94, 0.1)',
@@ -140,6 +158,69 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   settle(name: string): void {
-    this.toast.show(`Settlement request sent to ${name}!`, 'success' as any);
+    const amountToSettle = this.dashboardData?.aiInsightAmount ?? 0;
+
+    const isConfirmed = window.confirm(
+        `Are you sure you have paid ${this.getCurrencySymbol()}${amountToSettle.toFixed(2)} to ${name}? This will mark the debt as settled.`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    const payload = {
+      payeeName: name,
+      amount: amountToSettle
+    };
+
+    this.settlementService.settleDebt(payload).subscribe({
+      next: () => {
+        this.toast.show(`Successfully settled with ${name}!`, 'success' as any);
+        this.dashboardData = null;
+        this.isLoading = true;
+        this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.fetchDashboardData();
+        }, 300);
+      },
+      error: (err) => {
+        console.error('Settlement error:', err);
+        this.toast.show('Failed to process settlement', 'error' as any);
+      }
+    });
   }
+
+  remind(name: string): void {
+    const amountToCheck = this.dashboardData?.aiInsightAmount ?? 0;
+
+    if (!name || amountToCheck <= 0) {
+      this.toast.show('Invalid reminder details or amount is zero', 'error' as any);
+      return;
+    }
+
+    const isConfirmed = window.confirm(
+        `Send a payment reminder notification to ${name} for ${this.getCurrencySymbol()}${amountToCheck.toFixed(2)}?`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    const payload = {
+      payeeName: name,
+      amount: amountToCheck
+    };
+
+    this.settlementService.sendReminder(payload).subscribe({
+      next: () => {
+        this.toast.show(`Reminder sent successfully to ${name}!`, 'success' as any);
+      },
+      error: (err) => {
+        console.error('Reminder error:', err);
+        this.toast.show('Failed to send reminder', 'error' as any);
+      }
+    });
+  }
+
 }

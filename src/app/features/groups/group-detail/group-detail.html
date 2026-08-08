@@ -1,0 +1,146 @@
+<div appFadeInView class="space-y-6">
+    <!-- Top Bar with Back Button -->
+    <div class="flex items-center justify-between">
+        <button (click)="goBack()"
+                class="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+            <span class="text-lg">←</span>
+            Back to Groups
+        </button>
+    </div>
+
+    @if (isLoading) {
+        <div class="text-center py-16">
+            <p class="text-sm text-slate-400 animate-pulse">Loading group details...</p>
+        </div>
+    } @else if (group) {
+        <!-- Group Header Card -->
+        <div class="glass-card p-6 rounded-2xl apple-shadow space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">{{ group.name }}</h1>
+                    <p class="text-sm text-slate-400 mt-1">{{ group.description || 'No description provided' }}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-emerald-500/15 text-emerald-500 text-xs font-semibold rounded-lg">Active Group</span>
+                    <button (click)="leaveGroup()" class="px-3 py-1 bg-red-500/15 hover:bg-red-500/25 text-red-400 text-xs font-semibold rounded-lg transition-colors">
+                        Leave Group
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 pt-2 border-t border-slate-800 text-xs text-slate-400">
+                <p>👥 Members: <span class="text-white font-medium">{{ members.length || group.memberCount || 1 }}</span></p>
+            </div>
+        </div>
+
+        <!-- Group Management Sections (Expenses & Members) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Group Expenses Section -->
+            <div class="glass-card p-6 rounded-2xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-white">Group Expenses</h3>
+                        <p class="text-sm text-slate-400">Track and manage group bills.</p>
+                    </div>
+                    <!-- Add Expense Modal Trigger Button -->
+                    <button (click)="openAddExpenseModal()"
+                            class="px-3 py-1.5 bg-primary/20 hover:bg-primary/30 text-primary text-xs font-semibold rounded-xl transition-colors">
+                        + Add Expense
+                    </button>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    @if (expenses.length > 0) {
+                        @for (exp of expenses; track exp.id) {
+                            <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-xl border border-slate-700/50 hover:border-slate-600 transition-all">
+                                <div>
+                                    <p class="text-xs font-semibold text-white">{{ exp.title }}</p>
+                                    <p class="text-[10px] text-slate-400">{{ exp.category || 'General' }} • {{ exp.paymentMethod || 'Cash' }}</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm font-bold text-emerald-400">${{ exp.amount }}</span>
+                                    <!-- Edit / Delete Modal Triggers -->
+                                    <div class="flex items-center gap-1">
+                                        <button (click)="editExpense(exp)" class="p-1.5 text-slate-400 hover:text-white transition-colors" title="Edit Expense">
+                                            ✏️
+                                        </button>
+                                        <button (click)="deleteExpense(exp.id)" class="p-1.5 text-red-400 hover:text-red-300 transition-colors" title="Delete Expense">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    } @else {
+                        <p class="text-xs text-slate-400 text-center py-6">No expenses added to this group yet.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Group Members & Balances Section -->
+            <div class="glass-card p-6 rounded-2xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-white">Group Members</h3>
+                        <p class="text-sm text-slate-400">Manage participants and roles.</p>
+                    </div>
+                    <!-- Add Member Button -->
+                    <button (click)="openAddMemberModal()"
+                            class="px-3 py-1.5 bg-primary/20 hover:bg-primary/30 text-primary text-xs font-semibold rounded-xl transition-colors">
+                        + Add Member
+                    </button>
+                </div>
+
+                <!-- Members List -->
+                <div class="space-y-3 pt-2">
+                    @if (members.length > 0) {
+                        @for (member of members; track member.id) {
+                            <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+                                <div class="flex items-center gap-3">
+                                    @if (member.profilePicture || member.avatarUrl) {
+                                        <img [src]="member.profilePicture || member.avatarUrl" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-slate-700">
+                                    } @else {
+                                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+                                            {{ (member.fullName || member.email || 'U').charAt(0).toUpperCase() }}
+                                        </div>
+                                    }
+                                    <div>
+                                        <p class="text-xs font-semibold text-white flex items-center gap-1.5">
+                                            {{ member.fullName || 'No Name' }}
+                                            @if (isCurrentUser(member)) {
+                                                <span class="text-[9px] bg-primary/20 text-primary px-1.5 py-0.2 rounded">You</span>
+                                            }
+                                        </p>
+                                        <p class="text-[10px] text-slate-400">{{ member.email }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <!-- Role Badge: Show Admin if Owner/Admin, else Member -->
+                                    <span class="px-2.5 py-1 text-[10px] font-medium rounded-lg border"
+                                          [ngClass]="isAdmin(member) ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' : 'bg-slate-700/40 text-slate-300 border-slate-600/30'">
+                                        {{ isAdmin(member) ? 'Admin' : 'Member' }}
+                                    </span>
+
+                                    <!-- Remove Action: Only available for admin/creator to remove others -->
+                                    @if (!isAdmin(member)) {
+                                        <button (click)="removeMember(member.id)" class="text-slate-500 hover:text-red-400 p-1 transition-colors" title="Remove Member">
+                                            ✕
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    } @else {
+                        <p class="text-xs text-slate-400 text-center py-4">No members found in this group.</p>
+                    }
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+
+@if (ui.isNewExpenseModalOpen()) {
+    <app-new-expense-modal></app-new-expense-modal>
+}

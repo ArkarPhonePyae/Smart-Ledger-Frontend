@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Group } from '../../shared/models/group';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -24,5 +23,9 @@ export class GroupService {
 
   deleteGroup(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  leaveGroup(groupId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${groupId}/leave`, { responseType: 'text' as 'json' });
   }
 }

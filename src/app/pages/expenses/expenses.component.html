@@ -20,7 +20,13 @@
                    placeholder="Search expense description..."
                    class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none border border-transparent focus:border-primary">
 
-            <!-- 👈 ဤနေရာတွင် ngModel နှင့် ngModelChange ထည့်သွင်းပေးပါ -->
+            <!-- Date Filter -->
+            <input type="date"
+                   [(ngModel)]="selectedDate"
+                   (ngModelChange)="onSearch()"
+                   class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none text-slate-600 dark:text-slate-300">
+
+            <!-- Category Filter -->
             <select [(ngModel)]="selectedCategory"
                     (ngModelChange)="onSearch()"
                     class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none">
@@ -30,19 +36,44 @@
                 <option value="Bills & Utilities">Bills & Utilities</option>
                 <option value="General">General</option>
             </select>
+
+            <!-- Expense Type Filter -->
+            <select [(ngModel)]="selectedType"
+                    (ngModelChange)="onSearch()"
+                    class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm outline-none font-medium">
+                <option value="ALL">All Expenses</option>
+                <option value="PERSONAL">👤 Personal Only</option>
+                <option value="GROUP">👥 Group Shared Only</option>
+            </select>
         </div>
 
-        <!-- Expenses List with Edit & Delete Actions -->
+        <!-- Expenses List -->
         <div class="space-y-3">
             @for (expense of expenses(); track expense.id) {
-                <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-100/50 dark:hover:bg-slate-800/80 transition-all">
+                <div (click)="viewExpenseDetails(expense)" class="cursor-pointer flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-700/50 hover:bg-slate-100/50 dark:hover:bg-slate-800/80 transition-all">
                     <div class="flex items-center gap-3">
                         <span class="p-2.5 rounded-xl" [ngClass]="[expense.iconBg || 'bg-primary/10', expense.iconColor || 'text-primary']">{{ expense.emoji || '💰' }}</span>
                         <div>
-                            <h4 class="font-semibold text-sm">{{ expense.title }}</h4>
-                            <div class="flex items-center gap-2 mt-0.5">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-semibold text-sm">{{ expense.title }}</h4>
+                                @if (expense.groupId || expense.groupName) {
+                                    <span class="text-[10px] font-bold px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 rounded-full flex items-center gap-1">
+                                        👥 {{ expense.groupName || 'Group Shared' }}
+                                    </span>
+                                } @else {
+                                    <span class="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 rounded-full flex items-center gap-1">
+                                        👤 Personal
+                                    </span>
+                                }
+                            </div>
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
                                 <span class="text-xs px-2 py-0.5 bg-slate-200 dark:bg-slate-700 rounded-md font-medium text-slate-600 dark:text-slate-300">{{ expense.category || 'General' }}</span>
                                 <span class="text-xs text-slate-400">{{ expense.paymentMethod || 'Cash' }}</span>
+                                @if (expense.createdAt) {
+                                    <span class="text-xs text-slate-400 flex items-center gap-1">
+                                        🕒 {{ expense.createdAt | date:'mediumDate' }} {{ expense.createdAt | date:'shortTime' }}
+                                    </span>
+                                }
                             </div>
                             @if (expense.notes) {
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 italic">Note: {{ expense.notes }}</p>
@@ -50,8 +81,8 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4">
-                        <span class="font-bold text-base" [ngClass]="expense.amountClass">${{ expense.amount }}</span>
+                    <div class="flex items-center gap-4" (click)="$event.stopPropagation()">
+                        <span class="font-bold text-base" [ngClass]="expense.amountClass">{{ currencySymbol }}{{ expense.amount }}</span>
 
                         <div class="flex items-center gap-1 border-l pl-3 border-slate-200 dark:border-slate-700">
                             <button (click)="editExpense(expense)" title="Edit"
@@ -84,4 +115,63 @@
 
 @if (ui.isNewExpenseModalOpen()) {
     <app-new-expense-modal></app-new-expense-modal>
+}
+
+<!-- Read-Only Expense Details Modal -->
+@if (selectedExpenseForView()) {
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all">
+        <div class="glass-card bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-6 animate-modal">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold">Expense Details</h3>
+                <button (click)="closeViewModal()" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5 fill-none stroke-current" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <div class="flex items-center gap-3 p-3 bg-slate-100 dark:bg-slate-800/60 rounded-xl">
+                    <span class="text-2xl">{{ selectedExpenseForView().emoji || '💰' }}</span>
+                    <div>
+                        <h4 class="font-bold text-base">{{ selectedExpenseForView().title }}</h4>
+                        <p class="text-xs text-slate-500">{{ selectedExpenseForView().category || 'General' }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl">
+                        <span class="block text-xs text-slate-400 uppercase font-semibold">Amount</span>
+                        <span class="text-base font-bold text-primary">{{ currencySymbol }}{{ selectedExpenseForView().amount }}</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl">
+                        <span class="block text-xs text-slate-400 uppercase font-semibold">Payment Method</span>
+                        <span class="text-sm font-medium">{{ selectedExpenseForView().paymentMethod || 'Cash' }}</span>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Type</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded-full {{ selectedExpenseForView().groupId ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600' }}">
+                            {{ selectedExpenseForView().groupId ? (selectedExpenseForView().groupName || 'Group Shared') : 'Personal' }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-xs text-slate-400 uppercase font-semibold">Date & Time</span>
+                        <span class="text-xs font-medium">{{ selectedExpenseForView().createdAt | date:'medium' }}</span>
+                    </div>
+                </div>
+
+                @if (selectedExpenseForView().notes) {
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl">
+                        <span class="block text-xs text-slate-400 uppercase font-semibold mb-1">Notes</span>
+                        <p class="text-xs italic text-slate-600 dark:text-slate-300">{{ selectedExpenseForView().notes }}</p>
+                    </div>
+                }
+            </div>
+
+            <div class="pt-2">
+                <button (click)="closeViewModal()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-medium hover:bg-slate-200 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
 }

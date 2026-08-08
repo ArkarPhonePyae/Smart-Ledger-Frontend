@@ -13,7 +13,6 @@ export class DashboardService {
   getDashboardSummary(): Observable<DashboardSummary> {
     return this.http.get<any>(`${`${this.apiUrl}/summary`}`).pipe(
         map(response => {
-          // ApiResponse wrapper ပါလာလျှင် response.data ကိုယူမည်၊ မပါလျှင် response ကို တိုက်ရိုက်ယူမည်
           return response?.data ? response.data : response;
         })
     );

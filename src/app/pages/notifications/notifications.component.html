@@ -5,7 +5,7 @@
             <p class="text-sm text-slate-500 mt-1">All system alerts, payment reminders, and group updates.</p>
         </div>
         @if (notifications.length > 0) {
-            <button (click)="clearAll()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-semibold rounded-xl transition-colors">
+            <button (click)="clearAll()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-semibold rounded-xl transition-colors cursor-pointer">
                 Clear All
             </button>
         }
@@ -17,23 +17,30 @@
         } @else {
             @if (notifications.length > 0) {
                 @for (n of notifications; track n.id) {
-                    <div class="flex items-center justify-between p-4 rounded-xl border-l-4 transition-all"
+                    <!-- Notification Card (Clickable to view details) -->
+                    <div (click)="openNotificationDetail(n)"
+                         class="flex items-center justify-between p-4 rounded-xl border-l-4 transition-all cursor-pointer hover:scale-[1.01]"
                          [ngClass]="n.isRead ? 'bg-slate-800/20 border-slate-600 text-slate-400' : 'bg-slate-800/60 border-primary text-white font-semibold'">
-                        <div>
+                        <div class="min-w-0 flex-1 pr-4">
                             <div class="flex items-center gap-2">
                                 @if (!n.isRead) {
-                                    <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                                    <span class="w-2 h-2 rounded-full bg-primary inline-block flex-shrink-0"></span>
                                 }
-                                <h4 class="text-sm" [ngClass]="n.isRead ? 'font-normal' : 'font-bold'">{{ n.title }}</h4>
+                                <h4 class="text-sm truncate" [ngClass]="n.isRead ? 'font-normal text-slate-400' : 'font-bold text-white'">{{ n.title }}</h4>
                             </div>
-                            <p class="text-xs mt-0.5" [ngClass]="n.isRead ? 'text-slate-400 font-normal' : 'text-slate-200'">{{ n.message }}</p>
+                            <p class="text-xs mt-0.5 truncate" [ngClass]="n.isRead ? 'text-slate-500 font-normal' : 'text-slate-300'">{{ n.message }}</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="text-[10px] text-slate-400">{{ n.createdAt | date:'shortTime' }}</span>
+                        <div class="flex items-center gap-3 flex-shrink-0" (click)="$event.stopPropagation()">
+                            <!-- Updated to show both Date and Time -->
+                            <span class="text-[10px] text-slate-400 whitespace-nowrap">{{ n.createdAt | date:'medium' }}</span>
                             @if (!n.isRead) {
-                                <button (click)="markAsRead(n.id)" class="text-xs text-primary font-semibold hover:underline">Mark as read</button>
+                                <button type="button"
+                                        (click)="markAsRead(n.id)"
+                                        class="text-xs text-primary font-semibold hover:underline cursor-pointer whitespace-nowrap">
+                                    Mark as read
+                                </button>
                             }
-                            <button (click)="deleteNotification(n.id)" class="text-xs text-rose-500 hover:underline">Delete</button>
+                            <button (click)="deleteNotification(n.id)" class="text-xs text-rose-500 hover:underline cursor-pointer">Delete</button>
                         </div>
                     </div>
                 }
@@ -43,3 +50,33 @@
         }
     </div>
 </div>
+
+<!-- 🔍 Notification Detail Modal -->
+@if (selectedNotification) {
+    <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="closeModal()">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200" (click)="$event.stopPropagation()">
+            <div class="flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full bg-primary/10 text-primary font-bold">
+                        {{ selectedNotification.isRead ? 'Read' : 'Unread' }}
+                    </span>
+                    <h3 class="text-lg font-bold text-white mt-2">{{ selectedNotification.title }}</h3>
+                    <p class="text-xs text-slate-400">{{ selectedNotification.createdAt | date:'full' }}</p>
+                </div>
+                <button (click)="closeModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer">
+                    ✕
+                </button>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/55 text-slate-200 text-sm leading-relaxed">
+                {{ selectedNotification.message }}
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button (click)="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+}

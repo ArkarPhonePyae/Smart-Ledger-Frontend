@@ -23,19 +23,31 @@
                 @for (friend of friends; track friend.id) {
                     <div class="glass-card p-5 rounded-2xl apple-shadow flex items-center justify-between">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
-                                {{ friend.friendName.charAt(0).toUpperCase() }}
-                            </div>
+                            <!-- Avatar / Fallback Initial -->
+                            @if (friend.avatarUrl) {
+                                <img [src]="friend.avatarUrl" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20" alt="Avatar">
+                            } @else {
+                                <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
+                                    {{ friend.friendName.charAt(0).toUpperCase() }}
+                                </div>
+                            }
+
                             <div>
                                 <h4 class="font-semibold">{{ friend.friendName }}</h4>
                                 <p class="text-xs text-slate-400">{{ friend.friendEmail }}</p>
 
                                 @if (friend.status === 'REQUEST_SENT') {
-                                    <span class="text-xs text-amber-500 font-medium">Request Sent</span>
+                                    <span class="inline-flex items-center gap-1 text-xs text-amber-400 font-medium mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Request Sent
+                                    </span>
                                 } @else if (friend.status === 'REQUEST_RECEIVED') {
-                                    <span class="text-xs text-warning font-medium">Wants to connect with you</span>
+                                    <span class="inline-flex items-center gap-1 text-xs text-blue-400 font-medium mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Wants to connect with you
+                                    </span>
                                 } @else {
-                                    <p class="text-xs text-emerald-500 font-medium">Friends</p>
+                                    <span class="inline-flex items-center gap-1 text-xs text-emerald-400 font-medium mt-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Friends
+                                    </span>
                                 }
                             </div>
                         </div>
@@ -43,20 +55,25 @@
                         <div class="flex gap-2">
                             @if (friend.status === 'REQUEST_RECEIVED') {
                                 <button (click)="accept(friend.id!)"
-                                        class="px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-xs font-semibold rounded-xl transition-colors">Accept</button>
+                                        class="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm">
+                                    Confirm
+                                </button>
                                 <button (click)="cancelOrUnfriend(friend.id!, friend.status)"
-                                        class="px-3.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-semibold rounded-xl transition-colors">Delete Request</button>
+                                        class="px-3.5 py-1.5 bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-colors">
+                                    Delete
+                                </button>
                             } @else if (friend.status === 'REQUEST_SENT') {
                                 <button (click)="cancelOrUnfriend(friend.id!, friend.status)"
-                                        class="px-3.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-semibold rounded-xl transition-colors">Cancel Request</button>
+                                        class="px-3.5 py-1.5 bg-slate-700/50 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1">
+                                    Cancel Request
+                                </button>
                             } @else {
                                 <div class="relative group">
                                     <button class="px-3.5 py-1.5 bg-slate-700/50 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1">
                                         Friends ▼
                                     </button>
                                     <div class="absolute right-0 mt-1 w-36 bg-slate-900 border border-slate-700 rounded-xl shadow-xl py-1 hidden group-hover:block z-10">
-                                        <button (click)="viewProfile(friend.friendName)" class="w-full text-left px-4 py-2 text-xs text-slate-300 hover:bg-slate-800">View Profile</button>
-                                        <button (click)="messageFriend(friend.friendName)" class="w-full text-left px-4 py-2 text-xs text-slate-300 hover:bg-slate-800">Message</button>
+                                        <button (click)="viewProfile(friend)" class="w-full text-left px-4 py-2 text-xs text-slate-300 hover:bg-slate-800">View Profile</button>
                                         <button (click)="confirmUnfriend(friend.id!, friend.friendName)" class="w-full text-left px-4 py-2 text-xs text-rose-400 hover:bg-slate-800">Unfriend</button>
                                     </div>
                                 </div>

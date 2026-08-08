@@ -1,19 +1,17 @@
 export interface Expense {
-  id?: string | number;
+  id?: string;
+  _id?: string;
   title: string;
-  amount: number | string;
-  category?: string; // Optional အဖြစ် ပြောင်းခြင်း
-  paymentMethod?: string;
+  amount: number;
+  category: string;
+  paymentMethod: string;
   notes?: string;
-  createdAt?: string;
-  groupId?: string;
-  groupName?: string;
-
-  // UI helper fields
+  groupId?: string | null;
+  groupName?: string | null;
+  createdAt?: string; // Date and time field
   emoji?: string;
   iconBg?: string;
   iconColor?: string;
-  subtitle?: string;
   amountClass?: string;
 }
 

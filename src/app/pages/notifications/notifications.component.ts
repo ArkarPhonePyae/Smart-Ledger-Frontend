@@ -18,6 +18,9 @@ export class NotificationsComponent implements OnInit {
   notifications: NotificationItem[] = [];
   isLoading = true;
 
+  // Modal အတွက် variable အသစ်
+  selectedNotification: NotificationItem | null = null;
+
   ngOnInit(): void {
     this.loadNotifications();
   }
@@ -36,10 +39,42 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
+  // ဝင်ကြည့်လိုက်တာနဲ့ Detail ပေါ်လာပြီး Unread ဖြစ်နေရင် Read အဖြစ်သို့ ပြောင်းပေးခြင်း
+  openNotificationDetail(notification: NotificationItem): void {
+    this.selectedNotification = notification;
+
+    if (!notification.isRead) {
+      this.markAsRead(notification.id);
+    }
+  }
+
+  closeModal(): void {
+    this.selectedNotification = null;
+  }
+
   markAsRead(id: string): void {
+    console.log('1. Mark as read initiated for ID:', id);
+
     this.notificationService.markAsRead(id).subscribe({
-      next: () => {
-        this.loadNotifications();
+      next: (res) => {
+        console.log('2. API Success response:', res);
+
+        const notification = this.notifications.find(n => n.id === id);
+        if (notification) {
+          notification.isRead = true;
+        }
+
+        // Selected notification ကိုပါ update လုပ်ပေးရန်
+        if (this.selectedNotification && this.selectedNotification.id === id) {
+          this.selectedNotification.isRead = true;
+        }
+
+        this.cdr.detectChanges();
+
+        this.toast.show('Marked as read', 'success' as any);
+      },
+      error: (err) => {
+        console.error('3. API Error encountered:', err);
       }
     });
   }
@@ -48,6 +83,9 @@ export class NotificationsComponent implements OnInit {
     this.notificationService.deleteNotification(id).subscribe({
       next: () => {
         this.toast.show('Notification deleted', 'success' as any);
+        if (this.selectedNotification?.id === id) {
+          this.closeModal();
+        }
         this.loadNotifications();
       }
     });
@@ -57,6 +95,7 @@ export class NotificationsComponent implements OnInit {
     this.notificationService.clearAllNotifications().subscribe({
       next: () => {
         this.toast.show('All notifications cleared', 'success' as any);
+        this.closeModal();
         this.loadNotifications();
       }
     });

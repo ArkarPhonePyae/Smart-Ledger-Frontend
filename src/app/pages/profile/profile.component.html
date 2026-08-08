@@ -1,16 +1,74 @@
-<div appFadeInView class="space-y-8">
-  <div>
-    <h1 class="text-2xl md:text-3xl font-bold tracking-tight">User Profile</h1>
-    <p class="text-sm text-slate-500 mt-1">Manage your public identity and personal credentials.</p>
-  </div>
-  <div class="glass-card p-8 rounded-2xl apple-shadow max-w-2xl flex items-center gap-6">
-    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces"
-      class="w-24 h-24 rounded-full object-cover ring-4 ring-primary/30">
-    <div class="space-y-2">
-      <h2 class="text-xl font-bold">Alex Morgan</h2>
-      <p class="text-xs text-slate-400">alex.morgan&#64;aurapay.io • San Francisco, CA</p>
-      <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full">Pro
-        Enterprise Member</span>
+<div appFadeInView class="space-y-8 max-w-2xl">
+    <div>
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+            {{ isViewingFriend ? 'Friend Profile' : 'User Profile' }}
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">
+            {{ isViewingFriend ? 'Viewing public profile information.' : 'Manage your public identity and personal credentials.' }}
+        </p>
     </div>
-  </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-slate-400 py-6">Loading profile...</div>
+
+    <!-- Profile Card (View Mode) -->
+    <div *ngIf="!isLoading && user" class="space-y-6">
+        <div class="glass-card p-8 rounded-2xl apple-shadow flex items-center gap-6 relative">
+
+            <ng-container *ngIf="user.avatarUrl && user.avatarUrl.trim() !== ''; else initialsAvatar">
+                <img [src]="user.avatarUrl" class="w-24 h-24 rounded-full object-cover ring-4 ring-primary/30 shadow-md">
+            </ng-container>
+
+            <ng-template #initialsAvatar>
+                <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-primary to-indigo-500 text-white flex items-center justify-center text-2xl font-bold ring-4 ring-primary/30 shadow-md">
+                    {{ getInitials(user.fullName) }}
+                </div>
+            </ng-template>
+
+            <div class="space-y-2">
+                <h2 class="text-xl font-bold">{{ user.fullName }}</h2>
+                <p class="text-xs text-slate-400">{{ user.email }} • {{ user.phone || 'No phone added' }}</p>
+                <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full"
+                      *ngIf="user.proMember">
+                  Pro Enterprise Member
+                </span>
+            </div>
+
+            <!-- Edit Button -->
+            <button *ngIf="!isViewingFriend" (click)="toggleEdit()" class="absolute top-6 right-6 px-4 py-2 text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-all cursor-pointer">
+                {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+            </button>
+        </div>
+
+        <!-- Edit Form -->
+        <div *ngIf="!isViewingFriend && isEditing" class="glass-card p-6 rounded-2xl apple-shadow space-y-4">
+            <h3 class="text-lg font-semibold">Edit Information</h3>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1">Full Name</label>
+                <input type="text" [(ngModel)]="editForm.fullName" class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1">Phone Number</label>
+                <input type="text" [(ngModel)]="editForm.phone" class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1">Avatar URL (Optional)</label>
+                <input type="text" [(ngModel)]="editForm.avatarUrl" placeholder="https://example.com/my-photo.jpg" class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+
+            <div class="flex items-center gap-2 pt-2">
+                <input type="checkbox" id="darkMode" [(ngModel)]="editForm.darkMode" class="rounded border-slate-300 text-primary focus:ring-primary">
+                <label for="darkMode" class="text-sm font-medium">Dark Mode Default</label>
+            </div>
+
+            <div class="pt-4 flex justify-end gap-3">
+                <button (click)="saveProfile()" class="px-5 py-2 bg-primary text-white text-xs font-semibold rounded-xl hover:opacity-90 transition-all cursor-pointer">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
